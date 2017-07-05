@@ -42,5 +42,37 @@ CHIP ALU {
         ng; // 1 if (out < 0),  0 otherwise
 
     PARTS:
-   // Put you code here:
+    //zx=0이면 0을 선택
+    Mux16(a=x,b=false,sel=zx,out=Afterzx);
+
+    //zx이후 negate 한것과 하지 않은것을 nx를 기준으로 선택
+    Not16(in=Afterzx,out=NotAfterzx);
+    Mux16(a=Afterzx,b=NotAfterzx,sel=nx,out=Afternx);
+	
+    //zy=0이면 0을 선택
+    Mux16(a=y,b=false,sel=zy,out=Afterzy);
+
+    //마찬가지로 zy이후 ny를 기준으로 선택
+    Not16(in=Afterzy,out=NotAfterzy);
+    Mux16(a=Afterzy,b=NotAfterzy,sel=ny,out=Afterny);
+
+    //f를 기준으로 add연산과 and연산 중 하나를 선택
+    Add16(a=Afternx,b=Afterny,out=Addxy);
+    And16(a=Afternx,b=Afterny,out=Andxy);
+    Mux16(a=Andxy,b=Addxy,sel=f,out=Afterf);
+
+    //no을 기준으로 negate의 여부를 선택
+    Not16(in=Afterf,out=NotAfterf);
+    //여기서 ng와 zr의 선택을 위하여 상위8비트,하위8비트,MSB비트를 따로 저장해둔다
+    (inner node의 sub node를 사용할 수 없고, out자체도 사용할 수 없다고 나오기 때문에 따로 다른 변수에 저장해야 한다)
+    Mux16(a=Afterf,b=NotAfterf,sel=no,out=out,out[0..7]=right8Bit,out[8..15]=left8Bit,out[15]=negative);
+
+    //zr의 설정을 위해 out의 모든 비트를 서로 OR연산하여 zr을 설정한다.
+    Or8Way(in=right8Bit,out=tempRight);
+    Or8Way(in=left8Bit,out=tempLeft);
+    Or(a=tempRight,b=tempLeft,out=zeroCheck);
+
+    //MSB=1이면 ng = 1이고 MSB=0이면 ng = 0이다.
+    Mux(a=true,b=false,sel=zeroCheck,out=zr);
+    Mux(a=false,b=true,sel=negative,out=ng);
 }
