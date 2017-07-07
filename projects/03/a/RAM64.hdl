@@ -15,5 +15,16 @@ CHIP RAM64 {
     OUT out[16];
 
     PARTS:
-    // Put your code here:
+    //RAM8과 마찬가지로 load에 전달해줄때 선택되지 않는 친구들은 load자체가 0이 들어가 주어야 기존에 가지고 있던 값을 잃지 않는다.
+    //그 점을 제외하고는 RAM8의 구현과 동일하다.(Register -> RAM8) (앞으로도 4K까지 계속 동일하다 (주소의 위치만 주의하자))
+    DMux8Way(in=load,sel=address[3..5],a=load0,b=load1,c=load2,d=load3,e=load4,f=load5,g=load6,h=load7);
+    RAM8(in=in,load=load0,address=address[0..2],out=RAM80);
+    RAM8(in=in,load=load1,address=address[0..2],out=RAM81);
+    RAM8(in=in,load=load2,address=address[0..2],out=RAM82);
+    RAM8(in=in,load=load3,address=address[0..2],out=RAM83);
+    RAM8(in=in,load=load4,address=address[0..2],out=RAM84);
+    RAM8(in=in,load=load5,address=address[0..2],out=RAM85);
+    RAM8(in=in,load=load6,address=address[0..2],out=RAM86);
+    RAM8(in=in,load=load7,address=address[0..2],out=RAM87);
+    Mux8Way16(a=RAM80,b=RAM81,c=RAM82,d=RAM83,e=RAM84,f=RAM85,g=RAM86,h=RAM87,sel=address[3..5],out=out);
 }

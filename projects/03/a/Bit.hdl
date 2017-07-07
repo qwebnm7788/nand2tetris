@@ -14,5 +14,9 @@ CHIP Bit {
     OUT out;
 
     PARTS:
-    // Put your code here:
+    //pdf파일에 있는 그림 그대로의 구현
+    //DFF를 이용하여 out(t) = in(t-1)이 된다.
+    DFF(in=MuxOut,out=DFFOut,out=out);
+    //in과 DFFOut을 load에 맞추어 선택 후 out은 다시 DFF의 입력이 된다.
+    Mux(a=DFFOut,b=in,sel=load,out=MuxOut);
 }

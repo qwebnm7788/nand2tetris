@@ -15,5 +15,17 @@ CHIP RAM8 {
     OUT out[16];
 
     PARTS:
-    // Put your code here:
+    //8개의 Register 모두에 같은 load가 들어가게 되면 나중에 선택이 되지 않더라도 가지고 있는 값이 Bit의 구현에 의해 변하기 때문에(Flip-flop)
+    //애초에 선택되지 않는 친구들에게는 load=0이 들어가야 한다. 따라서 DMux를 이용하여 load를 나누어 준후 Register에 전달해준다.
+    DMux8Way(in=load,sel=address,a=load0,b=load1,c=load2,d=load3,e=load4,f=load5,g=load6,h=load7);
+    Register(in=in,load=load0,out=Register0);
+    Register(in=in,load=load1,out=Register1);
+    Register(in=in,load=load2,out=Register2);
+    Register(in=in,load=load3,out=Register3);
+    Register(in=in,load=load4,out=Register4);
+    Register(in=in,load=load5,out=Register5);
+    Register(in=in,load=load6,out=Register6);
+    Register(in=in,load=load7,out=Register7);
+    //그 후 address의 선택에 따라서 적절한 out을 뽑아내주면 된다.
+    Mux8Way16(a=Register0,b=Register1,c=Register2,d=Register3,e=Register4,f=Register5,g=Register6,h=Register7,sel=address,out=out);
 }

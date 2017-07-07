@@ -16,5 +16,11 @@ CHIP PC {
     OUT out[16];
 
     PARTS:
-    // Put your code here:
+    //Sequential chip을 구현할 때는 out으로 출력되는 값을
+    //다음번의 입력으로 사용하는 경우가 생기므로 feedback의 값을 잘 활용해야 한다.
+    Inc16(in=feedback,out=tempOut);
+    Mux16(a=feedback,b=tempOut,sel=inc,out=AfterInc);
+    Mux16(a=AfterInc,b=in,sel=load,out=AfterLoad);
+    Mux16(a=AfterLoad,b=false,sel=reset,out=AfterReset);
+    Register(in=AfterReset,load=true,out=out,out=feedback);
 }
